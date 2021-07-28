@@ -20,7 +20,7 @@ class _AddTableState extends State<AddTable> {
   String? tableName, tableDescrip, tablePicOne;
   String? tableResId, tableNumseat;
   
-  var t_pic;
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +156,7 @@ class _AddTableState extends State<AddTable> {
                     child: InkWell(
                       child: Icon(
                         Icons.change_circle,
-                        size: 20,
+                        size: 30,
                         color: Colors.red,
                       ),
                       onTap: () {
