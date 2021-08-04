@@ -3,35 +3,36 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rrs_app/model/tableres_model.dart';
+import 'package:flutter_rrs_app/model/foodmenu_mode.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class EditTable extends StatefulWidget {
-  final TableResModel? tableResModel;
-  EditTable({Key? key, this.tableResModel}) : super(key: key);
+class EditFoodMenu extends StatefulWidget {
+  final FoodMenuModel? foodMenuModel;
+  EditFoodMenu({Key? key, this.foodMenuModel}) : super(key: key);
 
   @override
-  _EditTableState createState() => _EditTableState();
+  _EditFoodMenuState createState() => _EditFoodMenuState();
 }
 
-class _EditTableState extends State<EditTable> {
+class _EditFoodMenuState extends State<EditFoodMenu> {
+  FoodMenuModel? foodMenuModel;
+  String? foodMenuName, foodMenuPrice, foodMenuPicture, foodMenuDescrip;
+  String? foodMenuStatus = 'true';
   final _formkey = GlobalKey<FormState>();
-  TableResModel? tableResModel;
   File? file;
-  String? tableName, tableDescrip, tablePicOne, tableResId, tableNumseat;
 
   @override
   void initState() {
-    // รับค่าจากตัวแปรเข้ามา
+    // TODO: implement initState
     super.initState();
-    tableResModel = widget.tableResModel;
-    tableName = tableResModel!.tableName;
-    tableResId = tableResModel!.tableResId;
-    tableNumseat = tableResModel!.tableNumseat;
-    tablePicOne = tableResModel!.tablePicOne;
-    tableDescrip = tableResModel!.tableDescrip;
+    foodMenuModel = widget.foodMenuModel;
+    foodMenuName = foodMenuModel!.foodMenuName;
+    foodMenuPrice = foodMenuModel!.foodMenuPrice;
+    foodMenuPicture = foodMenuModel!.foodMenuPicture;
+    foodMenuDescrip = foodMenuModel!.foodMenuDescrip;
   }
 
   @override
@@ -39,8 +40,8 @@ class _EditTableState extends State<EditTable> {
     return Scaffold(
         floatingActionButton: saveButton(),
         appBar: AppBar(
-          title: Text(
-              'Edit table ${tableResModel?.tableResId} ${tableResModel?.tableName}'),
+          backgroundColor: Color(0xffF1B739),
+          title: Text('Edit menu ${foodMenuModel?.foodMenuName}'),
         ),
         body: Container(
           padding: EdgeInsets.all(30),
@@ -51,35 +52,24 @@ class _EditTableState extends State<EditTable> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Table name",
+                      "Food name",
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    formTableName(),
+                    formFoodName(),
                     SizedBox(
                       height: 25,
                     ),
                     Text(
-                      "Table number",
+                      "Price",
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    formTableNumber(),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Text(
-                      "Number of seats",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    formNumSeat(),
+                    formFoodPrice(),
                     SizedBox(
                       height: 25,
                     ),
@@ -95,35 +85,47 @@ class _EditTableState extends State<EditTable> {
                       height: 25,
                     ),
                     Text(
-                      "Table description",
+                      "Food description",
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    formTableDescription(),
+                    formFoodDescription(),
                     SizedBox(
                       height: 25,
                     ),
-  
                   ],
                 ),
               )),
         ));
   }
 
-  FloatingActionButton saveButton() => FloatingActionButton(
-        onPressed: (){
-          uploadImage();
-        },
-        child: Icon(Icons.save),
-      );
+  Widget formFoodName() {
+    return TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Food name is required.';
+        return null;
+      },
+      initialValue: foodMenuModel!.foodMenuName,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onSaved: (value) => foodMenuName = value,
+      onChanged: (value) {
+        setState(() {
+          foodMenuName = value;
+        });
+      },
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
+    );
+  }
 
-      Future<Null> uploadImage() async {
+  Future<Null> uploadImage() async {
     Random random = Random();
     int i = random.nextInt(1000000);
-    String nameImage = 'tablePicOne_$i.jpg';
-    String url = '${Myconstant().domain}/res_reserve/upload_table_picture.php';
+    String nameImage = 'foodMenuPicture_$i.jpg';
+    String url =
+        '${Myconstant().domain}/res_reserve/upload_foodmenu_picture.php';
     try {
       Map<String, dynamic> map = Map();
       map['file'] =
@@ -132,83 +134,48 @@ class _EditTableState extends State<EditTable> {
       FormData formData = FormData.fromMap(map);
       await Dio().post(url, data: formData).then((value) {
         print('Response ==> $value');
-        tablePicOne =
-            '/res_reserve/tablePicOne/$nameImage';
-        print('urltablePic = $tablePicOne');
+        foodMenuPicture = '/res_reserve/foodMenuPicture/$nameImage';
+        print('urltablePic = $foodMenuPicture');
         editValueOnMySQL();
       });
     } catch (e) {}
   }
 
-   
-
-  Future<Null> editValueOnMySQL() async {
-     String? url = '${Myconstant().domain}/res_reserve/editTableWhereId.php?isAdd=true&tableId=${tableResModel!.tableId}&tableResId=$tableResId&tableName=$tableName&tableNumseat=$tableNumseat&tableDescrip=$tableDescrip&tablePicOne=$tablePicOne';
-     await Dio().get(url).then((value){
-       if (value.toString() == 'true') {
-         Navigator.pop(context);
-       } else {
-         normalDialog(context, 'failed try again');
-       }
-     });
-  }    
-
-  Widget formTableName() => TextFormField(
-        textAlignVertical: TextAlignVertical.center,
-        validator: (value) {
-          if (value == null || value.isEmpty) return 'Table name is required.';
-          return null;
-        },
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        onSaved: (value) => tableName = value,
-        onChanged: (value) {
-          setState(() {
-            tableName = value;
-          });
-        },
-        initialValue: tableResModel?.tableName,
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
-      );
-
-  Widget formNumSeat() {
+  Widget formFoodPrice() {
     return TextFormField(
-      textAlignVertical: TextAlignVertical.center,
       validator: (value) {
-        if (value == null || value.isEmpty)
-          return 'Number of seats is required.';
+        if (value == null || value.isEmpty) return 'Food price is required.';
         return null;
       },
+      initialValue: foodMenuModel!.foodMenuPrice,
+      keyboardType: TextInputType.number,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      onSaved: (value) => tableNumseat = value,
+      onSaved: (value) => foodMenuPrice = value,
       onChanged: (value) {
         setState(() {
-          tableNumseat = value;
+          foodMenuPrice = value;
         });
       },
-      initialValue: tableResModel?.tableNumseat,
-      keyboardType: TextInputType.number,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
     );
   }
 
-  Widget formTableNumber() {
+  Widget formFoodDescription() {
     return TextFormField(
-      textAlignVertical: TextAlignVertical.center,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Table number is required.';
+        if (value == null || value.isEmpty)
+          return 'Food description is required.';
         return null;
       },
+      initialValue: foodMenuModel!.foodMenuDescrip,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      onSaved: (value) => tableResId = value,
+      onSaved: (value) => foodMenuDescrip = value,
       onChanged: (value) {
         setState(() {
-          tableResId = value;
+          foodMenuDescrip = value;
         });
       },
-      initialValue: tableResModel?.tableResId,
-      keyboardType: TextInputType.number,
       decoration: InputDecoration(
           contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
     );
@@ -221,7 +188,7 @@ class _EditTableState extends State<EditTable> {
           child: file == null
               ? Stack(children: [
                   Image.network(
-                    '${Myconstant().domain}${tableResModel?.tablePicOne}',
+                    '${Myconstant().domain}${foodMenuModel?.foodMenuPicture}',
                     fit: BoxFit.cover,
                     width: 150,
                     height: 150,
@@ -274,18 +241,6 @@ class _EditTableState extends State<EditTable> {
     );
   }
 
-  IconButton addIcon(BuildContext context) {
-    return IconButton(
-        onPressed: () {
-          show_ModalBottomSheet(context);
-        },
-        icon: Icon(
-          Icons.add,
-          color: Colors.grey,
-          size: 40,
-        ));
-  }
-
   Future<dynamic> show_ModalBottomSheet(BuildContext context) {
     return showModalBottomSheet(
         context: context,
@@ -324,23 +279,23 @@ class _EditTableState extends State<EditTable> {
     } catch (e) {}
   }
 
-  Widget formTableDescription() {
-    return TextFormField(
-      onSaved: (value) => tableDescrip = value,
-      onChanged: (value) {
-        setState(() {
-          tableDescrip = value;
-        });
-      },
-      // minLines: 1,
-      // maxLines: null,
-      //  expands: true,
-      // keyboardType: TextInputType.multiline,
-      // textInputAction: TextInputAction.newline,
-      initialValue: tableResModel?.tableDescrip,
-      textAlignVertical: TextAlignVertical.center,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
-    );
+  Future<Null> editValueOnMySQL() async {
+    String? foodMenuId = foodMenuModel!.foodMenuId;
+    String? url =
+        '${Myconstant().domain}/res_reserve/editFoodWhereId.php?isAdd=true&foodMenuId=$foodMenuId&foodMenuName=$foodMenuName&foodMenuPrice=$foodMenuPrice&foodMenuPicture=$foodMenuPicture&foodMenuDescrip=$foodMenuDescrip';
+    await Dio().get(url).then((value) {
+      if (value.toString() == 'true') {
+        Navigator.pop(context);
+      } else {
+        normalDialog(context, 'failed try again');
+      }
+    });
   }
+
+  FloatingActionButton saveButton() => FloatingActionButton(
+        onPressed: () {
+         file != null ? uploadImage() : editValueOnMySQL();
+        },
+        child: Icon(Icons.save),
+      );
 }

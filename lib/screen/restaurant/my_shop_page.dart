@@ -11,6 +11,8 @@ class MyShopPage extends StatefulWidget {
 }
 
 class _MyShopPageState extends State<MyShopPage> {
+  
+
   @override
   Widget build(BuildContext context) {
     var divheight = MediaQuery.of(context).size.height;
@@ -58,6 +60,8 @@ class _MyShopPageState extends State<MyShopPage> {
                       //       color: Colors.amber,
                       //       shape: RoundedRectangleBorder()),
                       labelColor: Colors.black87,
+                      
+                      
                       unselectedLabelColor: Colors.grey,
                       indicatorColor: Color(0xffF1B739),
                       tabs: [
@@ -74,7 +78,6 @@ class _MyShopPageState extends State<MyShopPage> {
               ];
             },
             body: TabBarView(
-              
               children: [ShowTable(), ShowMenu(), ShowPromotion()],
             )),
       ),
@@ -97,6 +100,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return new Container(
       child: _tabBar,
+      color: Color(0xffFFF5DD),
     );
   }
 
