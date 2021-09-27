@@ -38,7 +38,19 @@ dependencies:
   card_settings: ^2.0.3
   flutter_slidable: ^0.6.0
   intl: ^0.17.0
-
+  flutter_speed_dial: ^4.2.0
+  date_time_picker: ^2.1.0
+  fluttertoast: ^8.0.8
+  google_maps_flutter: ^2.0.6
+  flutter_map: ^0.14.0
+  location: ^4.3.0
+  geolocator: ^7.6.2
+  geocoding: ^2.0.1
+  location_permissions: ^4.0.0
+  proste_dialog: ^2.1.2
+  loading_indicator: ^3.0.1
+  cached_network_image: ^3.1.0
+  font_awesome_flutter: ^9.0.0
  
   # carousel_pro: ^1.0.0
 
@@ -68,6 +80,22 @@ flutter:
     - assets/images/c3.jpg
     - assets/images/c4.jpg
     - assets/images/res_demo_1.jpg
+    - assets/images/bank_logo_apb.png
+    - assets/images/bank_logo_bcel.png
+    - assets/images/bank_logo_ldb.png
+    - assets/images/bank_logo_psv.png
+    - assets/images/bank_logo_stb.jfif
+    - assets/images/user.png
+    - assets/images/restaurant_icon.png
+    - assets/images/list_icon.png
+    - assets/images/bill_icon.png
+    - assets/images/restaurant_icon2.png
+    - assets/images/cancelorder_icon.png
+    - assets/images/menu_icon.png
+    - assets/images/reservetable_icon.png
+
+
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

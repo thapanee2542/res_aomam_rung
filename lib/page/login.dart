@@ -8,6 +8,7 @@ import 'package:flutter_rrs_app/page/home_page.dart';
 import 'package:flutter_rrs_app/page/signup.dart';
 import 'package:flutter_rrs_app/screen/restaurant/menu_bottom.dart';
 import 'package:flutter_rrs_app/screen/restaurant/register_res2.dart';
+import 'package:flutter_rrs_app/screen/restaurant/register_restaurant.dart';
 import 'package:flutter_rrs_app/screen/showOwner.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/my_style.dart';

@@ -93,7 +93,7 @@ class _AddMenuState extends State<AddMenu> {
         if (value == null || value.isEmpty) return 'Food description is required.';
         return null;
       },
-      keyboardType: TextInputType.number,
+      
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onSaved: (value) => foodMenuDescrip = value,
       onChanged: (value) {

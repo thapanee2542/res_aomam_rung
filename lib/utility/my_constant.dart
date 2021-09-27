@@ -1,4 +1,4 @@
 class Myconstant {
-  String domain = 'http://172.20.10.4';
-  Myconstant();
+  String domain = 'http://0535-180-183-131-94.ngrok.io';
+  Myconstant();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 }

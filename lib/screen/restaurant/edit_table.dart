@@ -4,9 +4,11 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/model/tableres_model.dart';
+import 'package:flutter_rrs_app/screen/restaurant/my_shop_page.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
 import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditTable extends StatefulWidget {
   final TableResModel? tableResModel;
@@ -32,6 +34,7 @@ class _EditTableState extends State<EditTable> {
     tableNumseat = tableResModel!.tableNumseat;
     tablePicOne = tableResModel!.tablePicOne;
     tableDescrip = tableResModel!.tableDescrip;
+    print('tablename = $tableName');
   }
 
   @override
@@ -39,6 +42,7 @@ class _EditTableState extends State<EditTable> {
     return Scaffold(
         floatingActionButton: saveButton(),
         appBar: AppBar(
+          backgroundColor: Color(0xffF1B739),
           title: Text(
               'Edit table ${tableResModel?.tableResId} ${tableResModel?.tableName}'),
         ),
@@ -105,7 +109,6 @@ class _EditTableState extends State<EditTable> {
                     SizedBox(
                       height: 25,
                     ),
-  
                   ],
                 ),
               )),
@@ -113,13 +116,43 @@ class _EditTableState extends State<EditTable> {
   }
 
   FloatingActionButton saveButton() => FloatingActionButton(
-        onPressed: (){
-          uploadImage();
+        onPressed: () {
+        //  print('pic = $tablePicOne');
+          print('tableNameEdit = $tableName');
+          //editValueOnMySQL();
+
+
+          if(tableResId != tableResModel?.tableResId){
+            checkTableNumber();
+          }
+          else{
+             file == null ? editValueOnMySQL() : uploadImage();
+          }
+
+          // //ถ้าหมายเลขโต๊ะมีเปลี่ยนแปลง และ รูปภาพไม่มีการเปลี่ยนแปลง ให้ทำการตรวจสอบหมายเลขโต๊ะว่าซ้ำหรือไม่
+          // if (tableResId != tableResModel?.tableResId && file == null) {
+          //   checkTableNumber();
+
+          // //ถ้าหมายเลขโต๊ะไม่มีการเปลี่ยนแปลง และ รูปภาพมีการเปลี่ยนแปลง ให้ทำการอัปดหลดรูปภาพนั้น
+          // }else if(tableResId == tableResModel?.tableResId && file != null ){
+          //  uploadImage();
+          //  editValueOnMySQL();
+          // }
+
+          // //ถ้าหมายเลขโต๊ะและรูปภาพมีการเปลี่ยนแปลง ให้อัปโหละรูปภาพ แล้ว แก้ไขค่า
+          // else if (tableResId != tableResModel?.tableResId && file != null) {
+          //   uploadImage();
+          //   editValueOnMySQL();
+          // }
+          // tableResId != null ? checkTableNumber() : file == null ? editValueOnMySQL() : uploadImage();
+
+          //  file == null ? editValueOnMySQL() : uploadImage();
+          // tableResId == null ? editValueOnMySQL()  : checkTableNumber();
         },
         child: Icon(Icons.save),
       );
 
-      Future<Null> uploadImage() async {
+  Future<Null> uploadImage() async {
     Random random = Random();
     int i = random.nextInt(1000000);
     String nameImage = 'tablePicOne_$i.jpg';
@@ -132,26 +165,45 @@ class _EditTableState extends State<EditTable> {
       FormData formData = FormData.fromMap(map);
       await Dio().post(url, data: formData).then((value) {
         print('Response ==> $value');
-        tablePicOne =
-            '/res_reserve/tablePicOne/$nameImage';
+        tablePicOne = '/res_reserve/tablePicOne/$nameImage';
         print('urltablePic = $tablePicOne');
         editValueOnMySQL();
       });
     } catch (e) {}
   }
 
-   
+  Future<Null> checkTableNumber() async {
+    //ดึงค่าของ restaurantId ออกมา
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? restaurantId = preferences.getString('restaurantId');
+
+    String url =
+        '${Myconstant().domain}/res_reserve/getTableNumberWhereRestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableResId=$tableResId';
+    try {
+      await Dio().get(url).then((value) {
+        if (value.toString() == 'null') {
+          file == null ? editValueOnMySQL() : uploadImage();
+        } else {
+          normalDialog(context,
+              'This table number already exists. Please change the table number.');
+        }
+      });
+    } catch (e) {}
+  }
 
   Future<Null> editValueOnMySQL() async {
-     String? url = '${Myconstant().domain}/res_reserve/editTableWhereId.php?isAdd=true&tableId=${tableResModel!.tableId}&tableResId=$tableResId&tableName=$tableName&tableNumseat=$tableNumseat&tableDescrip=$tableDescrip&tablePicOne=$tablePicOne';
-     await Dio().get(url).then((value){
-       if (value.toString() == 'true') {
-         Navigator.pop(context);
-       } else {
-         normalDialog(context, 'failed try again');
-       }
-     });
-  }    
+    String? url =
+        '${Myconstant().domain}/res_reserve/editTableWhereId.php?isAdd=true&tableId=${tableResModel!.tableId}&tableResId=$tableResId&tableName=$tableName&tableNumseat=$tableNumseat&tableDescrip=$tableDescrip&tablePicOne=$tablePicOne';
+    await Dio().get(url).then((value) {
+      if (value.toString() == 'true') {
+        Navigator.pop(context);
+        normalDialog(context, 'Edit complete');
+       
+      } else {
+        normalDialog(context, 'failed try again');
+      }
+    });
+  }
 
   Widget formTableName() => TextFormField(
         textAlignVertical: TextAlignVertical.center,
@@ -163,10 +215,10 @@ class _EditTableState extends State<EditTable> {
         onSaved: (value) => tableName = value,
         onChanged: (value) {
           setState(() {
-            tableName = value;
+            tableName = value ;
           });
         },
-        initialValue: tableResModel?.tableName,
+        initialValue: tableName,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.all(10), border: OutlineInputBorder()),
       );
@@ -248,7 +300,7 @@ class _EditTableState extends State<EditTable> {
                     width: 150,
                     height: 150,
                   ),
-                   Positioned(
+                  Positioned(
                     right: 5,
                     top: 5,
                     child: InkWell(

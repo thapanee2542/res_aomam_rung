@@ -50,6 +50,7 @@ String? foodMenuStatus;
       });
       if (value.toString() != 'null') {
         var result = json.decode(value.data);
+        print('result all discount promotion ==> $result');
         for (var map in result) {
           FoodMenuModel foodMenuModel = FoodMenuModel.fromJson(map);
           setState(() {
@@ -195,10 +196,8 @@ String? foodMenuStatus;
       }
   }    
 
-  Padding addTableButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
+  Widget addTableButton(BuildContext context) {
+    return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Column(
@@ -216,8 +215,7 @@ String? foodMenuStatus;
             ],
           ),
         ],
-      ),
-    );
+      );
   }
 
   Future<Null> deleteFoodMenu(FoodMenuModel foodMenuModel) async {
@@ -225,7 +223,7 @@ String? foodMenuStatus;
         context: context,
         builder: (context) => SimpleDialog(
               title: Text(
-                'Do You want to delete table ${foodMenuModel.foodMenuName} ?',
+                'Do You want to delete menu ${foodMenuModel.foodMenuName} ?',
                 style: TextStyle(color: Colors.red),
               ),
               children: [

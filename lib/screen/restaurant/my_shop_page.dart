@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/screen/restaurant/show_menu.dart';
 import 'package:flutter_rrs_app/screen/restaurant/show_promotion.dart';
+import 'package:flutter_rrs_app/screen/restaurant/show_promotion_choice.dart';
+
 import 'package:flutter_rrs_app/screen/restaurant/show_table.dart';
+
+
 
 class MyShopPage extends StatefulWidget {
   MyShopPage({Key? key}) : super(key: key);
@@ -11,6 +15,9 @@ class MyShopPage extends StatefulWidget {
 }
 
 class _MyShopPageState extends State<MyShopPage> {
+
+ 
+
   
 
   @override
@@ -78,7 +85,7 @@ class _MyShopPageState extends State<MyShopPage> {
               ];
             },
             body: TabBarView(
-              children: [ShowTable(), ShowMenu(), ShowPromotion()],
+              children: [ShowTable(), ShowMenu(),ShowPromotion()],
             )),
       ),
     );

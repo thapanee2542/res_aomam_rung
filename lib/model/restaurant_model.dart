@@ -13,6 +13,7 @@ class RestaurantModel {
   String? restaurantBranch;
   String? restaurantAddress;
   String? typeOfFood;
+  String? vat;
 
   RestaurantModel(
       {this.restaurantId,
@@ -28,7 +29,9 @@ class RestaurantModel {
       this.restaurantNameshop,
       this.restaurantBranch,
       this.restaurantAddress,
-      this.typeOfFood});
+      this.typeOfFood,
+      this.vat
+      });
 
   RestaurantModel.fromJson(Map<String, dynamic> json) {
     restaurantId = json['restaurantId'];
@@ -45,6 +48,7 @@ class RestaurantModel {
     restaurantBranch = json['restaurantBranch'];
     restaurantAddress = json['restaurantAddress'];
     typeOfFood = json['typeOfFood'];
+    vat = json['vat'];
   }
 
   Map<String, dynamic> toJson() {
@@ -63,6 +67,7 @@ class RestaurantModel {
     data['restaurantBranch'] = this.restaurantBranch;
     data['restaurantAddress'] = this.restaurantAddress;
     data['typeOfFood'] = this.typeOfFood;
+    data['vat'] = this.vat;
     return data;
   }
 }

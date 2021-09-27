@@ -43,9 +43,9 @@ class _ShowTableState extends State<ShowTable> {
         loadStatus = false;
       });
       if (value.toString() != 'null') {
-        //print('value ==>> $value');
+        print('value ==>> $value');
         var result = json.decode(value.data);
-        //print('result ==>> $result');
+        print('result ==>> $result');
         for (var map in result) {
           TableResModel tableresModel = TableResModel.fromJson(map);
           setState(() {
@@ -76,10 +76,8 @@ class _ShowTableState extends State<ShowTable> {
         child: CircularProgressIndicator(),
       );
 
-  Padding addTableButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Row(
+  Widget addTableButton(BuildContext context) {
+    return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Column(
@@ -97,8 +95,7 @@ class _ShowTableState extends State<ShowTable> {
             ],
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget showListTable() => ListView.separated(
@@ -115,10 +112,12 @@ class _ShowTableState extends State<ShowTable> {
               color: Colors.blue,
               icon: Icons.edit,
               onTap: () {
+                
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditTable(
+
                               tableResModel: tableresModels[index],
                             ))).then((value) => readTableRes());
               },

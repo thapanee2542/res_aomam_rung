@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rrs_app/utility/my_constant.dart';
+import 'package:flutter_rrs_app/utility/normal_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -108,15 +109,36 @@ class _AddTableState extends State<AddTable> {
           child: Text('save'),
           onPressed: () {
             if (_formkey.currentState!.validate()) {
-              // ScaffoldMessenger.of(context)
-              //         .showSnackBar(SnackBar(content: Text('Processing Data')));
-              uploadImage();
+              if (file == null) {
+                normalDialog(context, 'please insert a picture');
+              } else {
+                checkTableNumber();
+              }
               print(
                   'tableId =$tableResId,tableName =$tableName,tableNumseat=$tableNumseat,tabledes=$tableDescrip,tablePicOne=$tablePicOne');
             }
           },
         ),
       );
+
+Future<Null> checkTableNumber () async{
+
+   //ดึงค่าของ restaurantId ออกมา 
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? restaurantId = preferences.getString('restaurantId');
+
+   String url = '${Myconstant().domain}/res_reserve/getTableNumberWhereRestaurantId.php?isAdd=true&restaurantId=$restaurantId&tableResId=$tableResId';
+   try {
+     await Dio().get(url).then((value){
+       if(value.toString() == 'null'){
+           uploadImage();
+       }else{
+         normalDialog(context, 'This table number already exists. Please change the table number.');
+       }
+     });
+   } catch (e) {
+   }
+}      
 
   Widget formTableDescription() {
     return TextFormField(
